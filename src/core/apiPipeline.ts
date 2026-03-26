@@ -1,5 +1,8 @@
 import { styleText } from "node:util";
 import { ProtocolError } from "../errors/protocol.js";
+import type { ZodSchema } from "zod/v3";
+import type z from "zod";
+import { SchemaError } from "../errors/schema.js";
 
 export class ApiPipeline<T extends Response | unknown> {
   constructor(private promise: Promise<T>) {}
@@ -42,8 +45,10 @@ export class ApiPipeline<T extends Response | unknown> {
 
   // jsonからデータを確定する
   // 使えるデータを返す
-  // .TODO: anyは後でZod型に差し替え
-  execute(this: ApiPipeline<unknown>): Promise<any> {
-    return this.promise;
+  execute(this: ApiPipeline<unknown>, schema: ZodSchema): Promise<z.infer<typeof schema>> {
+    const parsed = schema.safeParse(this.promise);
+    if (!parsed.success) throw new SchemaError(parsed.error.message);
+
+    return parsed.data;
   }
 }
