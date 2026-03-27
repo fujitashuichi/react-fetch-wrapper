@@ -35,11 +35,11 @@ export const responseMock = {
     });
   },
 
-  notOkResponse: (status: 500 | 404 | 403 | 401) => {
+  notOkResponse: (status: number) => {
     return createResponse({
       ok: false,
-      status: status,
-      statusText: errorMap[status]
+      status,
+      statusText: (errorMap as Record<number, string>)[status] ?? "unknown status code"
     });
   }
 }
