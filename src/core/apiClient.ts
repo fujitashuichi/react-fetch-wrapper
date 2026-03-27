@@ -1,8 +1,8 @@
 import { styleText } from "node:util";
 import { ProtocolError } from "../errors/protocol.js";
 import { Fetcher, type Init } from "./fetcher.js";
-import type { ZodSchema } from "zod/v3";
 import { SchemaError } from "../errors/schema.js";
+import type z from "zod";
 
 
 const METHODS = ["get", "post", "put", "delete"] as const;
@@ -17,7 +17,7 @@ export class ApiClient {
 
   private readonly fetcher = () => new Fetcher(this.path);
 
-  private async request(method: typeof METHODS[number], init: Init, schema: ZodSchema) {
+  private async request(method: typeof METHODS[number], init: Init, schema: z.ZodType) {
     try {
       return this.fetcher()[method](init)
         .ensureOk()
@@ -40,8 +40,8 @@ export class ApiClient {
     }
   }
 
-  get = (init: Init, schema: ZodSchema) => this.request("get", init, schema);
-  post = (init: Init, schema: ZodSchema) => this.request("post", init, schema);
-  put = (init: Init, schema: ZodSchema) => this.request("put", init, schema);
-  delete = (init: Init, schema: ZodSchema) => this.request("delete", init, schema);
+  get = (init: Init, schema: z.ZodType) => this.request("get", init, schema);
+  post = (init: Init, schema: z.ZodType) => this.request("post", init, schema);
+  put = (init: Init, schema: z.ZodType) => this.request("put", init, schema);
+  delete = (init: Init, schema: z.ZodType) => this.request("delete", init, schema);
 }

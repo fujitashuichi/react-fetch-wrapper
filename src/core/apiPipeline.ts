@@ -1,6 +1,5 @@
 import { styleText } from "node:util";
 import { ProtocolError } from "../errors/protocol.js";
-import type { ZodSchema } from "zod/v3";
 import type z from "zod";
 import { SchemaError } from "../errors/schema.js";
 
@@ -10,18 +9,12 @@ export class ApiPipeline<T extends Response | unknown> {
   // ok状態を確保する
   // resを返す
   ensureOk(this: ApiPipeline<Response>): ApiPipeline<Response> {
-    const next = this.promise.then((res: Response) => {
-      if (!(res instanceof Response)) {
-        process.stdout.write(styleText(
-          ["bgRed", "white"],
-          "fetch failed: received data is not Response type"
-        ));
-        throw new Error(`fetch failed: required Response but received ${typeof res}`);
-      };
-      if (res instanceof Response && !res.ok) throw new ProtocolError(res.status);
+    const next: Promise<Response> = (async () => {
+      const res: Response = await this.promise;
+      if (!res.ok) throw new ProtocolError(res.status);
 
       return res;
-    });
+    })();
 
     return new ApiPipeline(next);
   }
@@ -29,24 +22,20 @@ export class ApiPipeline<T extends Response | unknown> {
   // jsonをパースする
   // jsonを返す
   json(this: ApiPipeline<Response>): ApiPipeline<unknown> {
-    const next = this.promise.then((res: { json: () => void; }) => {
-      if (!(res instanceof Response)) {
-        process.stdout.write(styleText(
-          ["bgRed", "white"],
-          `parse json failed: required Response but received ${typeof res}`
-        ));
-        throw new Error(`parse json failed: required Response but received ${typeof res}`);
-      };
-      res.json();
-    });
+    const next: Promise<unknown> = (async () => {
+      const res: Response = await this.promise;
+      return res.json();
+    })();
 
     return new ApiPipeline(next);
   }
 
   // jsonからデータを確定する
   // 使えるデータを返す
-  execute(this: ApiPipeline<unknown>, schema: ZodSchema): Promise<z.infer<typeof schema>> {
-    const parsed = schema.safeParse(this.promise);
+  async execute<T extends z.ZodType>(this: ApiPipeline<unknown>, schema: T): Promise<z.infer<T>> {
+    const json: unknown = await this.promise;
+    const parsed = schema.safeParse(json);
+
     if (!parsed.success) throw new SchemaError(parsed.error.message);
 
     return parsed.data;
