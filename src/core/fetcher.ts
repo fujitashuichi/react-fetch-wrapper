@@ -1,3 +1,4 @@
+import type { IApiPipeline } from "../types.js";
 import { ApiPipeline } from "./apiPipeline.js";
 
 type ContentType = "application/json" | "text/html";
@@ -18,19 +19,19 @@ export class Fetcher {
     this.path = path;
   }
 
-  get = (init?: Init) => new ApiPipeline(
+  get = (init?: Init): IApiPipeline<Response> => new ApiPipeline(
     fetch(this.path, init)
   );
 
-  post = (body: any, init?: Init) => new ApiPipeline(
-    fetch(this.path, { ...init, body })
+  post = (body: any, init?: Init): IApiPipeline<Response> => new ApiPipeline(
+    fetch(this.path, { ...init, body: JSON.stringify(body) })
   );
 
-  put = (body: any, init?: Init) => new ApiPipeline(
-    fetch(this.path, { ...init, body })
+  put = (body: any, init?: Init): IApiPipeline<Response> => new ApiPipeline(
+    fetch(this.path, { ...init, body: JSON.stringify(body) })
   );
 
-  delete = (body: any, init?: Init) => new ApiPipeline(
-    fetch(this.path, { ...init, body })
+  delete = (body: any, init?: Init): IApiPipeline<Response> => new ApiPipeline(
+    fetch(this.path, { ...init, body: JSON.stringify(body) })
   );
 }

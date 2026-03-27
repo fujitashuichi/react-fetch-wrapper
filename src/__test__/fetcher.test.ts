@@ -30,10 +30,15 @@ describe("fetcher", () => {
     it("getメソッドは正常に失敗する", () => {
       [500, 404, 403, 401].forEach(async (status) => {
         vi.spyOn(global, "fetch").mockResolvedValue(responseMock.notOkResponse(status));
-        const data = await fetcher.get().ensureOk().json().execute(responseMock.okResponseSchema()).catch((err) => {
-          console.log(err);
-        });
-        expect(data).toBe(undefined);
+
+        const promise = fetcher.get().ensureOk().json().execute(responseMock.okResponseSchema());
+
+        await expect(promise).rejects.toThrow();
+        expect(
+          await promise.catch((err) => {
+            console.log(err);
+          })
+        ).toBe(undefined);
       });
     });
   });
