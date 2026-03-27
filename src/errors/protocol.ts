@@ -19,8 +19,11 @@ const errorNameMap = {
 
 
 export class ProtocolError extends Error {
+  status: number | undefined;
+
   constructor (status: Status) {
     super(message(status));
     this.name = (errorNameMap as Record<number, string>)[status] ?? "ProtocolError";
+    this.status = status;
   }
 }

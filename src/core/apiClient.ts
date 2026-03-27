@@ -1,5 +1,8 @@
+import { styleText } from "node:util";
+import { ProtocolError } from "../errors/protocol.js";
 import { Fetcher, type Init } from "./fetcher.js";
 import type { ZodSchema } from "zod/v3";
+import { SchemaError } from "../errors/schema.js";
 
 
 const METHODS = ["get", "post", "put", "delete"] as const;
@@ -15,10 +18,26 @@ export class ApiClient {
   private readonly fetcher = () => new Fetcher(this.path);
 
   private async request(method: typeof METHODS[number], init: Init, schema: ZodSchema) {
-    return this.fetcher()[method](init)
-      .ensureOk()
-      .json()
-      .execute(schema);
+    try {
+      return this.fetcher()[method](init)
+        .ensureOk()
+        .json()
+        .execute(schema);
+    } catch (e: unknown) {
+      if (e instanceof ProtocolError) {
+        process.stdout.write(styleText(
+          ["bgRedBright"],
+          `\nfetch failed with ${e.status}\n\n`
+        ));
+      }
+
+      if (e instanceof SchemaError) {
+        process.stdout.write(styleText(
+          ["bgRedBright"],
+          `\nreceived invalid data:\n ${e.message}\n\n`
+        ));
+      }
+    }
   }
 
   get = (init: Init, schema: ZodSchema) => this.request("get", init, schema);
