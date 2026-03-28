@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@my-app/react-fetch-wrapper": ["./packages/react-fetch-wrapper/src/index.ts"]
+    },
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "module": "nodenext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/frontend/" },
+    { "path": "./packages/react-fetch-wrapper/" }
+  ]
+}

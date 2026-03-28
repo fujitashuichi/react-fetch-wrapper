@@ -1,8 +1,8 @@
-import { styleText } from "node:util";
 import { ProtocolError } from "../errors/protocol.js";
 import { Fetcher, type Init } from "./fetcher.js";
 import { SchemaError } from "../errors/schema.js";
 import type z from "zod";
+import { styleText } from "node:util";
 
 
 const METHODS = ["get", "post", "put", "delete"] as const;
