@@ -7,19 +7,26 @@ import { styleText } from "node:util";
 
 const METHODS = ["get", "post", "put", "delete"] as const;
 
-export class ApiClient {
-  path: string = "";
+type FetchProps = {
+  schema: z.ZodType<any>,
+  body?: any,
+  init?: Init
+}
 
-  constructor(path: string) {
-    this.path = path;
+
+export class ApiClient {
+  url: string = "";
+
+  constructor(url: string) {
+    this.url = url;
   }
 
 
-  private readonly fetcher = () => new Fetcher(this.path);
+  private readonly fetcher = () => new Fetcher(this.url);
 
-  private async request(method: typeof METHODS[number], init: Init, schema: z.ZodType) {
+  private async request(method: typeof METHODS[number], schema: z.ZodType, body?: any, init?: Init) {
     try {
-      return this.fetcher()[method](init)
+      return this.fetcher()[method](body, init)
         .ensureOk()
         .json()
         .execute(schema);
@@ -40,8 +47,11 @@ export class ApiClient {
     }
   }
 
-  get = (init: Init, schema: z.ZodType) => this.request("get", init, schema);
-  post = (init: Init, schema: z.ZodType) => this.request("post", init, schema);
-  put = (init: Init, schema: z.ZodType) => this.request("put", init, schema);
-  delete = (init: Init, schema: z.ZodType) => this.request("delete", init, schema);
+  get = ({ schema, init }: FetchProps) => this.request("get", schema, init);
+  post = ({ schema, body, init }: FetchProps) => this.request("post", schema, body, init);
+  put = ({ schema, body, init }: FetchProps) => this.request("put", schema, body, init);
+  delete = ({ schema, init }: FetchProps) => this.request("delete", schema, init);
+
+
+  route = (path: string) => new ApiClient(`${this.url}${path}`);
 }
