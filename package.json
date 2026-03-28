@@ -1,0 +1,23 @@
+{
+  "name": "react-fetch-wrapper-root",
+  "version": "1.0.0",
+  "description": "* マインドリフレッシュのために超小規模のパッケージを作成する\r * Zod系のOSSを眺めていた時に、抽象的な型の扱いについて知らないことが多かった\r * 普段使うコードの抽象化を通して共通点を見いだすことが出来るかもしれないと考えた\r * 既存ライブラリの一機能をイメージすることで効率的に学習できるかもしれない",
+  "homepage": "https://github.com/fujitashuichi/react-fetch-wrapper#readme",
+  "bugs": {
+    "url": "https://github.com/fujitashuichi/react-fetch-wrapper/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fujitashuichi/react-fetch-wrapper.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
