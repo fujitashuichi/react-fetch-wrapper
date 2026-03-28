@@ -13,3 +13,31 @@
 * AI利用の課題について
   [AIによる推奨とそのリスク](./docs/AI.md)
   ↑学習の本筋から外れますが、個人的に印象が強かったのでまとめています
+
+* 使用例:
+```ts
+import { ApiClient as Client } from "@my-app/react-fetch-wrapper"
+import z from "zod";
+
+const schema = z.literal("dummy");
+const body = "post_dummy";
+
+const errorHandler = (err: Error) => {
+  console.error(err);
+};
+
+
+export const ApiClient = () => {
+  const client = new Client("https://example.com/");
+  const userClient = client.route("/user");
+
+  const user = {
+    get: userClient.get({ schema }).catch(errorHandler),
+    post: userClient.post({ schema, body })
+  };
+
+
+  return { user };
+}
+```
+※動作は保証しません。息抜きとしてのパッケージ作成の練習であることをご理解ください
